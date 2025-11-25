@@ -69,6 +69,37 @@ After completion, your system is fully prepared to run MEGA.
 
 ---
 
+
+## Run the Docker Container
+
+Navigate to the root directory containing the `Dockerfile` and create the Docker Image. Depending on if a GPU is available or not, set the `GPU` variable in line 22. Use the platform flag to imitate a platform when working on not supported platforms, such as Macbook ARM (use `--platform=linux/amd64`). Use the `-t`flag to provide the image with a title and a tag:
+```
+docker build 
+--platform=<platform to imitate>
+-t <image name>:<image tag> .
+```
+
+When the image was successfully created, create a Docker Container out of it:
+```
+docker run 
+--platform=<platform to imitate>
+-it 
+# shared input directory
+-v <host directory>:<container directory> 
+# shared output directory
+-v <host directory>:<container directory> 
+<image name>:<image tag>
+```
+Again, a platform can be imitated. Use the `-v`flag to define shared directories between host and container, such as:
+```
+-v /Users/user/frames_to_process:/data/input
+-v /Users/user/frames_processed:/data/output
+```
+...for defining a directory with input for the models and a directory to define where outputs should be stored.\
+After the `docker run` command, the terminal of the container opens after some seconds, permitting to perform operations in the environment (e. g. use models).
+
+
+
 ## Running the Demo
 
 ### 1. Navigate to the MEGA folder
@@ -77,7 +108,14 @@ After completion, your system is fully prepared to run MEGA.
 cd mega.pytorch
 ```
 
-### 2. Use the models
+### 2. Activate the MEGA enviroment
+
+```bash
+conda activate MEGA
+```
+
+
+### 3. Use the models
 
 ```bash
 python demo/demo.py base configs/vid_R_101_C4_1x.yaml R_101.pth --suffix ".JPEG" --visualize-path datasets/image_folder --output-folder visualization --output-video
